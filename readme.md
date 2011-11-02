@@ -12,9 +12,8 @@ amount of time.
 The okjs library directly attends to these hurdles, and is specifically intended for the development process.
 
 
-
 Quick Start
-_____________
+-------------
 
         var unit = okjs({
             verbose: true,
@@ -36,6 +35,7 @@ _____________
         window.onload = function () {
             unit.start()
         };
+
 
 Reference
 -------------
@@ -69,11 +69,10 @@ Reference
     callback needs to be executed in 'delay' time or the test fails, even if "fn" was left null.  The "context" parameter
     will be used as the "this" property, preserving scope for object methods.
 
-Learning More
+More Info
 -------------
 
-Currently, the best place to start is to look at the framework's self-test page, in the /test/ folder.  As always,
-the source code is canonical.
+Currently, the best place to start is to look at the framework's self-test page, in the /test/ folder.
 
 
 Bugs & Contributions
