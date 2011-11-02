@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../ok.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">></script>
+    <style>
+        .error {
+            color: red;
+            font-size: .75em;
+        }
+        .succcess {
+            color: gray;
+        }
+        .test {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .subtest {
+            margin-left: 10px;
+            font-style: italic;
+        }
+        .summary {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        .summary.success {
+            color: green;
+        }
+        .item {
+            margin-left: 15px;
+        }
+
+    </style>
+
+
+    <script type="text/javascript">
+
+        var unit = okjs({
+            exceptions: 0, // enable for debugging
+            verbose: true,
+            wait_ms: 15000
+        });
+
+        unit.test("basics",  function () {
+            unit.equal(true, true, "true eq true");
+            unit.nequal(true, false, "true eq true");
+            unit.nequal(1, true, "q ne true");
+            unit.nequal('', false, "empty string ne false");
+            unit.equal('', '', "empty string identity");
+            unit.equal(null, null, "null eq null");
+            unit.nequal(null, false, "null ne false");
+        });
+
+
+        unit.test("timeouts & intervals",  function () {
+            setTimeout( unit.callback("timeout callback"),  500);
+        });
+
+
+        unit.test("basic callbacks",  function () {
+            // basic
+            var callback = unit.callback("basic callback");
+            callback();
+
+            var callback2 = unit.callback("callback w/ args, timeout", 100, function (one, two) {
+                unit.equal(one, "arg1", "first arg matches");
+                unit.equal(two, "arg2", "second arg matches");
+            });
+            callback2("arg1", "arg2");
+
+            var obj = {
+                id : "foo",
+                method : function (one, two) {
+                    unit.equal(this.id, "foo", "scope and id matches");
+                }
+            };
+            var callback3 = unit.callback("advanced callback w/ scope",
+                    100, obj.method, obj);
+            callback3("param1", "param2");
+        });
+
+        unit.test("jquery ajax",  function () {
+            $.ajax({
+                url: 'test.json',
+                success: unit.callback("jquery ajax success", 100, function (data){
+                    unit.equal(data.success, true, "json data success");
+                })
+            });
+        });
+
+
+        unit.test("expected fails",  function () {
+            setTimeout( unit.callback("timeout overlong", 1000), 1500);
+            setTimeout( unit.callback("timeout exception", 1000, function() {
+                throw "error in timeout callback";
+            }), 500);
+        }, {testErrors: true});
+
+        window.onload = function () {
+            unit.start()
+        };
+    </script>
+</head>
+<body>
+</body>
+</html>
