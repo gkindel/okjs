@@ -44,8 +44,8 @@
 
         unit.test("basics",  function () {
             unit.equal(true, true, "true eq true");
-            unit.nequal(true, false, "true eq true");
-            unit.nequal(1, true, "q ne true");
+            unit.nequal(true, false, "true neq false");
+            unit.nequal(1, true, "1 neq true");
             unit.nequal('', false, "empty string ne false");
             unit.equal('', '', "empty string identity");
             unit.equal(null, null, "null eq null");
@@ -55,6 +55,9 @@
 
         unit.test("timeouts & intervals",  function () {
             setTimeout( unit.callback("timeout callback"),  500);
+            setTimeout( unit.callback("timeout callback w/ function", 1000, function () {
+                unit.equal(true,true, "in callback function ok")
+            }),  500);
         });
 
 

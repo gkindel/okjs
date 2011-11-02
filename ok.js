@@ -13,7 +13,10 @@
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
 
- Author  2011  Greg Kindel
+ Avaialbe on GitHub: https://github.com/gkindel/okjs
+
+ Author: Greg Kindel
+ Created as "Unit.js" Spring 2011
  */
 
 
