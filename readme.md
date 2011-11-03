@@ -61,7 +61,7 @@ Reference
     Basic assert.  Strictly compared.  If objects are passed in, it looks for b.equals(a),
     if defined. Otherwise does a strict (===) compare.
 
-* .equal(a, b, msg)
+* .nequal(a, b, msg)
 
     Basic negative assert. Strict.
 
