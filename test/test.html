@@ -86,7 +86,8 @@
         unit.test("jquery ajax",  function () {
             $.ajax({
                 url: 'test.json',
-                success: unit.callback("jquery ajax success", 100, function (data){
+                dataType : "json",
+                success: unit.callback("jquery ajax success", 5000, function (data){
                     unit.equal(data.success, true, "json data success");
                 })
             });
