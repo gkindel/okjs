@@ -37,6 +37,8 @@ Quick Start
         };
 
 
+[sample output](http://gkindel.com/okjs/test/quickstart.html)
+
 Reference
 -------------
 * okjs(options)
@@ -72,7 +74,8 @@ Reference
 More Info
 -------------
 
-Currently, the best place to start is to look at the framework's self-test page, in the /test/ folder.
+Currently, the best place to start is to look at the framework's self-test page, in the [/test/](test/) folder,
+ or [online here](http://gkindel.com/okjs/test/test.html)
 
 
 Bugs & Contributions
