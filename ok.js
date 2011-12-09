@@ -36,7 +36,7 @@
 
         this.options = {
             verbose : false,
-            exceptions: false,
+            exceptions: true,
             wait_ms : 5000
         };
         for(var o in this.options ){
@@ -65,10 +65,6 @@
             this.report(error, message);
         },
 
-        skip  : function( got, expected, message ) {
-            this.report(null, message, "skip" );
-        },
-
         throws : function  (message, callback, opt_message) {
             // todo: test which expects an exception to be thrown?
             throw "to be implemented";
@@ -83,7 +79,7 @@
 
             if( options ) {
                 test.testErrors = options.testErrors;
-                test.delay = options.postDelay;
+                test.postDelay = options.postDelay;
             }
 
             if( this._current ) {
@@ -221,21 +217,21 @@
             // for internal testing, flip assumptions
             if( this._testErrors ){
                 if( error ) {
-                    type = "success"
+                    type = "success item"
                     error = null;
                 }
                 else {
-                    type = "error";
+                    type = "error item";
                     error = "Expected error."
                 }
             }
 
             if(error) {
                 this._errors++;
-                type = 'error'
+                type = 'error item'
             }
             if( ! type ) {
-                type = "success"
+                type = "success item"
             }
 
             var logType = 'OK';
@@ -244,9 +240,6 @@
             }
             else if( type == "info" ){
                 logType = "INFO";
-            }
-            else if( type == "skip" ){
-                logType = "SKIP";
             }
 
             msg =   "#" + (++this._count)
@@ -377,7 +370,7 @@
                 body.appendChild(output);
             }
             var msgContainer = document.createElement('div');
-            msgContainer.setAttribute('class', type + " item");
+            msgContainer.setAttribute('class', type);
             var msgEl = document.createTextNode(msg);
 
             msgContainer.appendChild(msgEl);
