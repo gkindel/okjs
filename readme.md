@@ -16,8 +16,7 @@ Quick Start
 -------------
 
         var unit = okjs({
-            verbose: true,
-            wait_ms: 15000
+            verbose: true
         });
 
         unit.test("test group 1",  function () {
@@ -32,6 +31,14 @@ Quick Start
             }),  500);
         });
 
+       unit.test("test group 3",  function () {
+            unit.event("click", document, "document was clicked", function (e) {
+                unit.equal(e.type, "click", "was a mouse click event");
+                unit.equal(e.currentTarget, document, "currentTarget is the document");
+            }, 10000);
+            unit.log("waiting 10s for user to click page... ");
+        });
+
         window.onload = function () {
             unit.start()
         };
@@ -41,35 +48,68 @@ Quick Start
 
 Reference
 -------------
-* okjs(options)
+* `okjs(options)`
 
     Returns an instance of the testing harness.
 
     Available options:
-    * verbose - if set to false, tests that pass are hidden
-    * wait_ms - default delay for callbacks and events
-    * exceptions - false by default. Setting to true will disable the catching of exceptions, which
-        can help debugging tools.
+    * `verbose` - if set to false, tests that pass are hidden
+    * `wait_ms` - default delay for callbacks and events
+    * `exceptions` - Disabled the catching of exceptions, which can help debugging with browser tools which
+        break on exceptions. Defaults to false.
 
-* .test(msg, fn)
+* `.test(msg, fn)`
 
     Defines a group of test assertions. Groups are executed sequentially. Exceptions in the function will
     halt the group functions execution.  All outstanding events are resolved before moving on.
 
-* .equal(a, b, msg)
+    * `msg` : Associated test message.
+    * `fn` : An anonymous function with no arguments.
+
+* `.equal(a, b, msg)`
 
     Basic assert.  Strictly compared.  If objects are passed in, it looks for b.equals(a),
     if defined. Otherwise does a strict (===) compare.
 
-* .nequal(a, b, msg)
+    * `a` , `b` : objects to be compared.
+    * `msg` : Associated test message.
+
+
+* `.nequal(a, b, msg)`
 
     Basic negative assert. Strict.
 
-* .callback(msg, delay, fn, context)
+    * `a` , `b` : objects to be compared.
+    * `msg` : Associated test message.
 
-    Returns a function which is intended to be asynchronously executed, by intervals, observers, eventlisteners, etc. The
-    callback needs to be executed in 'delay' time or the test fails, even if "fn" was left null.  The "context" parameter
-    will be used as the "this" property, preserving scope for object methods.
+* `.callback(c, delay, fn, context)`
+
+    Returns a function which is intended to be asynchronously executed, by intervals, observers,
+    ajax responses, event listeners, etc. The callback needs to be executed in 'delay' time or the
+    test fails, even if "fn" was left null. Arguments are preserved.
+
+    * `msg` : Associated test message.
+    * `delay` : Optional delay in msec. Overrides default timeout.
+    * `fn` : Optional callback which specifies an event listener function.
+    * `context` : Scope, to be used for `this` in the callback.
+
+
+* `.event(type, source, msg, fn, delay)`
+
+    Asserts an event will be fired. Event listener with callback is automatically added, waited
+     for, and removed once either the event is caught or timeout occurs.  Event arguments are preserved.
+
+    * `type` : Required event type (eg: "click", "resize").
+    * `source` : Object which is expected to fire event, supporting DOM event syntax.
+    * `msg` : Associated test message.
+    * `delay` : Optional delay in msec. Overrides default timeout.
+    * `fn` : Optional callback which specifies an event listener function.
+
+* `.log(msg)`
+
+    Logs a message with no effect on test results. Useful for notes.
+
+    * `msg` : Associated text message.
 
 More Info
 -------------
@@ -89,3 +129,7 @@ License
 -------------
 okjs is open source, made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
+
+Author
+-------------
+Twitter: [@gkindel](http://twitter.com/#!/gkindel)

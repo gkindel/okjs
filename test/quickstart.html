@@ -33,12 +33,12 @@
 
     </style>
 
+    <h3>OKJS Quick Start Example</h3>
 
     <script type="text/javascript">
 
         var unit = okjs({
-            verbose: true,
-            wait_ms: 15000
+            verbose: true
         });
 
         unit.test("test group 1",  function () {
@@ -51,6 +51,14 @@
            setTimeout( unit.callback("timeout callback w/ function", 1000, function () {
                 unit.equal(true,true, "in callback function ok")
             }),  500);
+        });
+
+        unit.test("test group 3",  function () {
+            unit.event("click", document, "document was clicked", function (e) {
+                unit.equal(e.type, "click", "was a mouse click event");
+                unit.equal(e.currentTarget, document, "currentTarget is the document");
+            }, 10000);
+            unit.log("waiting 10s for user to click page... ");
         });
 
         window.onload = function () {
