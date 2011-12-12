@@ -26,7 +26,7 @@ Quick Start
         });
 
         unit.test("test group 2",  function () {
-           setTimeout( unit.callback("timeout callback w/ function", 1000, function () {
+           setTimeout( unit.callback("timeout callback w/ function", function () {
                 unit.equal(true,true, "in callback function ok")
             }),  500);
         });
