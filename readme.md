@@ -68,8 +68,7 @@ Reference
 
 * .`assert`(a, msg)
 
-    Basic assert.  Not strictly compared.  Passes if `a` evaluates to true.
-    if defined. Otherwise does a strict (===) compare.
+    Basic assert.  Passes if `a` evaluates to true.
 
     * `a` object to evaluate as a boolean
     * `msg` : Associated test message
