@@ -66,9 +66,17 @@ Reference
     * `msg` : Associated test message.
     * `fn` : An anonymous function with no arguments.
 
+* .`assert`(a, msg)
+
+    Basic assert.  Not strictly compared.  Passes if `a` evaluates to true.
+    if defined. Otherwise does a strict (===) compare.
+
+    * `a` object to evaluate as a boolean
+    * `msg` : Associated test message
+
 * `.equal(a, b, msg)`
 
-    Basic assert.  Strictly compared.  If objects are passed in, it looks for b.equals(a),
+    Strict comparison assert.  If objects are passed in, it looks for b.equals(a),
     if defined. Otherwise does a strict (===) compare.
 
     * `a` , `b` : objects to be compared.
