@@ -82,17 +82,17 @@ Reference
     * `a` , `b` : objects to be compared.
     * `msg` : Associated test message.
 
-* `.callback(c, delay, fn, context)`
+* `.callback(c, fn, context, options)`
 
     Returns a function which is intended to be asynchronously executed, by intervals, observers,
-    ajax responses, event listeners, etc. The callback needs to be executed in 'delay' time or the
+    ajax responses, event listeners, etc. The callback needs to be executed in time or the
     test fails, even if "fn" was left null. Arguments are preserved.
 
     * `msg` : Associated test message.
-    * `delay` : Optional delay in msec. Overrides default timeout.
     * `fn` : Optional callback which specifies an event listener function.
     * `context` : Scope, to be used for `this` in the callback.
-
+    * `options`:
+        * `wait_ms` - custom time allocation for this callback only
 
 * `.event(type, source, msg, fn, delay)`
 

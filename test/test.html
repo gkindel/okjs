@@ -55,7 +55,7 @@
 
         unit.test("timeouts & intervals",  function () {
             setTimeout( unit.callback("timeout callback"),  500);
-            setTimeout( unit.callback("timeout callback w/ function", 1000, function () {
+            setTimeout( unit.callback("timeout callback w/ function", function () {
                 unit.equal(true,true, "in callback function ok")
             }),  500);
         });
@@ -66,7 +66,7 @@
             var callback = unit.callback("basic callback");
             callback();
 
-            var callback2 = unit.callback("callback w/ args, timeout", 100, function (one, two) {
+            var callback2 = unit.callback("callback w/ args, timeout", function (one, two) {
                 unit.equal(one, "arg1", "first arg matches");
                 unit.equal(two, "arg2", "second arg matches");
             });
@@ -78,8 +78,7 @@
                     unit.equal(this.id, "foo", "scope and id matches");
                 }
             };
-            var callback3 = unit.callback("advanced callback w/ scope",
-                    100, obj.method, obj);
+            var callback3 = unit.callback("advanced callback w/ scope", obj.method, obj);
             callback3("param1", "param2");
         });
 
@@ -87,7 +86,7 @@
             $.ajax({
                 url: 'test.json',
                 dataType : "json",
-                success: unit.callback("jquery ajax success", 5000, function (data){
+                success: unit.callback("jquery ajax success", function (data){
                     unit.equal(data.success, true, "json data success");
                 })
             });
