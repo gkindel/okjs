@@ -82,7 +82,7 @@ Reference
     * `a` , `b` : objects to be compared.
     * `msg` : Associated test message.
 
-* `.callback(msg, c, fn, context, options)`
+* `.callback(msg, fn, context, options)`
 
     Returns a function which is intended to be asynchronously executed, by intervals, observers,
     ajax responses, event listeners, etc. The callback needs to be executed in time or the
