@@ -41,24 +41,31 @@
             verbose: true
         });
 
-        unit.test("test group 1",  function () {
-            unit.equal(true, true, "true eq true");
-            unit.nequal(true, false, "true neq false");
+        unit.test("basic",  function () {
+            unit.assert("true-ish", "basic boolean true");
+            unit.equal(true, true, "strict comparison true");
+            unit.nequal(true, false, "strict comaparison neq");
             unit.nequal(1, true, "1 neq true");
         });
 
-        unit.test("test group 2",  function () {
+        unit.test("async callback",  function () {
            setTimeout( unit.callback("timeout callback w/ function", function () {
                 unit.equal(true,true, "in callback function ok")
             }),  500);
         });
 
-        unit.test("test group 3",  function () {
+        unit.test("async event",  function () {
             unit.event("click", document, "document was clicked", function (e) {
                 unit.equal(e.type, "click", "was a mouse click event");
                 unit.equal(e.currentTarget, document, "currentTarget is the document");
             }, 10000);
             unit.log("waiting 10s for user to click page... ");
+        });
+
+        unit.test("exception throwing",  function () {
+            unit.exception("expected exception", function () {
+                throw "catch me"
+            });
         });
 
         window.onload = function () {

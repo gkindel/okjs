@@ -1,9 +1,15 @@
-okjs
-=============
- ojks - a tiny asynchronous-friendly JS unit test utility
+# okjs 
 
-About
--------------
+---
+
+A tiny asynchronous-friendly JS unit test utility.
+
+
+
+## About
+
+---
+
 JavaScript and the web form a heavily asynchronous environment, which can pose particular challenges for JS based unit
 testing.  In particular, Ajax, click handlers, and other observer models require that exceptions be caught in various
 execution blocks and without interfering with object scope.  Additionally, these methods need to execute in a specified
@@ -12,31 +18,39 @@ amount of time.
 The okjs library directly attends to these hurdles, and is specifically intended for the development process.
 
 
-Quick Start
--------------
+## Quick Start
+
+---
 
         var unit = okjs({
             verbose: true
         });
 
-        unit.test("test group 1",  function () {
-            unit.equal(true, true, "true eq true");
-            unit.nequal(true, false, "true neq false");
+        unit.test("basic",  function () {
+            unit.assert("true-ish", "basic boolean true");
+            unit.equal(true, true, "strict comparison true");
+            unit.nequal(true, false, "strict comaparison neq");
             unit.nequal(1, true, "1 neq true");
         });
 
-        unit.test("test group 2",  function () {
+        unit.test("async callback",  function () {
            setTimeout( unit.callback("timeout callback w/ function", function () {
                 unit.equal(true,true, "in callback function ok")
             }),  500);
         });
 
-       unit.test("test group 3",  function () {
+        unit.test("async event",  function () {
             unit.event("click", document, "document was clicked", function (e) {
                 unit.equal(e.type, "click", "was a mouse click event");
                 unit.equal(e.currentTarget, document, "currentTarget is the document");
             }, 10000);
             unit.log("waiting 10s for user to click page... ");
+        });
+
+        unit.test("exception throwing",  function () {
+            unit.exception("expected exception", function () {
+                throw "catch me"
+            });
         });
 
         window.onload = function () {
@@ -46,8 +60,12 @@ Quick Start
 
 [sample output](http://gkindel.com/okjs/test/quickstart.html)
 
-Reference
--------------
+## Reference
+
+---
+
+### Setup
+
 * `okjs(options)`
 
     Returns an instance of the testing harness.
@@ -61,10 +79,17 @@ Reference
 * `.test(msg, fn)`
 
     Defines a group of test assertions. Groups are executed sequentially. Exceptions in the function will
-    halt the group functions execution.  All outstanding events are resolved before moving on.
+    halt the group functions execution.  All outstanding events are resolved before moving on. All assertions
+    must be done within a test group. Tests are executed once unit.start() is called.
 
     * `msg` : Associated test message.
     * `fn` : An anonymous function with no arguments.
+
+* `.start()`
+
+    Begins test execution, to be called sometime after the window onLoad event.
+
+### Assert Statements
 
 * .`assert`(a, msg)
 
@@ -112,31 +137,36 @@ Reference
     * `delay` : Optional delay in msec. Overrides default timeout.
     * `fn` : Optional callback which specifies an event listener function.
 
+* `.exception(msg, fn)`
+
 * `.log(msg)`
 
     Logs a message with no effect on test results. Useful for notes.
 
     * `msg` : Associated text message.
 
-More Info
--------------
+## License
+
+---
+
+okjs is open source, made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+
+
+## More Info
+
+---
 
 Currently, the best place to start is to look at the framework's self-test page, in the [/test/](test/) folder,
  or [online here](http://gkindel.com/okjs/test/test.html)
 
 
-Bugs & Contributions
--------------
+## Bugs & Contributions
 
-This is an open source project, contributions and bug fixes are welcome.  Please contact greg.kindel@gmail.com if you
-wish to become a contributor.
+This is an open source project, contributions and bug fixes are welcome.  Forking is encourage, or contact me (see Author section) to get access to the development branch.  Additionally, I encourage the use of GitHub for issue tracking.
 
 
-License
--------------
-okjs is open source, made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+## Author
 
+--- 
 
-Author
--------------
 Twitter: [@gkindel](http://twitter.com/#!/gkindel)
