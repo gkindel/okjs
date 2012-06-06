@@ -33,10 +33,17 @@
             return  new okjs( options );
 
         this.options = merge(defaults, options);
-        this.logger = this.options.logger || window.__OKJS_REMOTE_LOGGER__;
+        this.location = window.location.toString();
 
-        if( ! this.logger )
+        if( window.frameElement && window.frameElement.__OK_PARENT__ ){
+            this._parent = window.frameElement.__OK_PARENT__;
+        }
+
+        this.logger = this.options.logger;
+
+        if( ! this.logger ) {
             DefaultLogger(this);
+        }
 
         this._init();
     };
@@ -152,6 +159,18 @@
             this.report(message, error);
         },
 
+        url : function (message, url) {
+            var test = {
+                message: message,
+                url : url
+            };
+
+            if( this._running )
+                this._queue.unshift(test);
+            else
+                this._queue.push(test);
+        },
+
         log : function ( message) {
             this.logger.onInfo({
                 message: message
@@ -159,6 +178,7 @@
         },
 
         report : function ( message, error) {
+
             if( error && ! this._expectErrors ) {
                 this.failed++;
                 this.logger.onFail({
@@ -213,15 +233,18 @@
         },
 
         _eval : function (message, code, scope, args){
+            if( this.options.exceptions ) {
+                code && code.apply(scope, args);
+                this.report(message);
+                return;
+            }
+
             var error;
             try {
                 code && code.apply(scope, args);
             }
             catch(e){
-                if( this.options.exceptions )
-                    throw e;
-                else
-                    error = "Exception: " + e;
+                error = "Exception: " + e;
             }
             this.report(message, error);
         },
@@ -237,8 +260,7 @@
             }
             // no more tests, we're done
             if( ! this._queue.length ){
-                this._running = false;
-                this.logger.onFinish();
+                this._finish();
                 return;
             }
 
@@ -248,8 +270,47 @@
             this.logger.onGroup( test );
 
             this._hold();
-            this._eval(test.message, test.code);
+
+            if( test.code )
+                this._eval(test.message, test.code);
+
+            if( test.url )
+                this._url(test.url);
+
             this._release();
+        },
+
+        _url : function (url){
+            this._hold();
+            var el = _okframe(true);
+            el.src = url;
+            el.__OK_PARENT__ = this;
+            this.logger.onInfo({
+                url: url
+            });
+        },
+
+        _remote : function (unit) {
+            if( ! this._running )
+                return;
+            this.logger.onRemote(unit);
+            this.passed += unit.passed;
+            this.failed += unit.failed;
+            this._release();
+        },
+
+        _finish : function () {
+            this._running = false;
+
+            if( this._parent )
+                this._parent._remote(this);
+
+            var el = _el("okframe");
+            if( el ){
+//                el.src = "about:blank";
+//                el.style.display = "none"
+            }
+            this.logger.onFinish();
         },
 
         // utility: scope binding to this object
@@ -293,7 +354,7 @@
         this._started = now();
 
         // set up output div
-        this.output = el('output');
+        this.output = _el('output');
 
         if( ! this.output ) {
             this.output = document.createElement('div');
@@ -306,8 +367,9 @@
 
     DefaultLogger.prototype = {
         _log : function (type, message) {
-            var m = this._timestamp() + ' :: ' + type + " :: " + message;
-            this.output.appendChild( div("item " + type, m) );
+            this.output.appendChild( div( "item " + type,
+                this._timestamp(), '::', type, "::", message
+            ));
             this._scroll();
         },
 
@@ -335,7 +397,7 @@
         },
 
         onGroup : function ( group ) {
-            this.output.appendChild( div("group", group.message) );
+            this.output.appendChild( div("group", group.message ));
             this._scroll();
         },
 
@@ -348,10 +410,21 @@
         },
 
         onInfo : function ( info ) {
-            this._log("info", info.message);
+            this._log("info", link( info.url, info.message) );
         },
 
-        onFinish : function ( summary ) {
+        onRemote : function (unit) {
+//            this.output.appendChild(div(
+            this._log(
+                unit.failed ? 'fail' : 'ok',
+                unit.passed + " test" + (unit.passed == 1 ? '' : 's') + " completed. "
+                    +  (unit.skipped ? unit.skipped + " groups skipped. " : '')
+                    + unit.failed + " error" +(unit.failed == 1 ? '' : 's')+ ". "
+                    + this._timestamp()
+            );
+        },
+
+        onFinish : function ( unit ) {
             this.output.appendChild( div("summary", "Test Complete") );
             this._summary();
             this._scroll();
@@ -371,7 +444,8 @@
             ".prompt { font-weight: bolder; color: blue; }",
             ".summary { margin-top: 10px; } ",
             ".summary.success { color: green; }",
-            ".item { margin-left: 15px; font-family: monospace;}"
+            ".item { margin-left: 15px; font-family: monospace;}",
+            "#okframe { border: 5px solid gray; border-radius: 5px; position: absolute; top: 10px; bottom: 10px; right: 15px; width: 50%; height: 95%; }"
             ];
         var ss = document.createElement("style");
         ss.text = ss.innerHTML = css.join("\n");
@@ -379,16 +453,55 @@
         head.insertBefore(ss, head.children[0] );
     }
 
-    function el ( id ) {
+    function _el ( id ) {
         return document.getElementById(id);
     }
 
-    function div ( className, message ) {
+    function _okframe ( create ) {
+        var id = "okframe";
+        var el = _el(id);
+        if( ! el && create) {
+            el = document.createElement("iframe");
+            el.setAttribute('id', id);
+            var body = document.getElementsByTagName('body')[0];
+            body.appendChild(el);
+        }
+        return el;
+    }
+
+    function div ( className, message1, message2, etc ) {
         var el = document.createElement('div');
+
         if( className )
             el.setAttribute('class', className);
-        if( message )
-            el.appendChild( document.createTextNode(message) )
+
+        for(var i = 1; i < arguments.length; i++) {
+
+            if( typeof arguments[i] == "string")
+                el.appendChild( document.createTextNode(arguments[i]) );
+            else
+                el.appendChild(  arguments[i] );
+
+            el.appendChild( document.createTextNode(' ') );
+        }
+
+        return el;
+    }
+
+    function link (href, message, target ) {
+        var el;
+
+        message = message || href || '';
+
+        if( href ) {
+            el = document.createElement('a');
+            el.setAttribute('href', href);
+            el.setAttribute('target', target || 'okframe');
+            el.appendChild( document.createTextNode(message) );
+        }
+        else
+            el = document.createTextNode(message);
+
         return el;
     }
 

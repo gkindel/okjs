@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../ok.js"></script>
+
+    <h3>OKJS Multi-Page Harness Example</h3>
+
+    <script type="text/javascript">
+
+        var unit = okjs({
+            exceptions: 1
+        });
+
+        unit.url("quick start demo", "quickstart.html");
+        unit.url("okjs unit test", "okjs-unit.html");
+
+        window.onload = function () {
+            unit.start()
+        };
+
+
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
