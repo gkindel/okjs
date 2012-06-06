@@ -4,45 +4,15 @@
 <head>
     <script type="text/javascript" src="../ok.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">></script>
-    <style>
-        .error {
-            color: red;
-            font-size: .75em;
-        }
-        .succcess {
-            color: gray;
-        }
-        .test {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .subtest {
-            margin-left: 10px;
-            font-style: italic;
-        }
-        .summary {
-            font-size: 1.5em;
-            margin-top: 10px;
-        }
-        .summary.success {
-            color: green;
-        }
-        .item {
-            margin-left: 15px;
-        }
-
-    </style>
 
     <h3>OKJS Quick Start Example</h3>
 
     <script type="text/javascript">
 
-        var unit = okjs({
-            verbose: true
-        });
+        var unit = okjs();
 
         unit.test("basic",  function () {
-            unit.assert("true-ish", "basic boolean true");
+            unit.ok("ok(msg, 1) basic boolean true", 1);
             unit.equal(true, true, "strict comparison true");
             unit.nequal(true, false, "strict comaparison neq");
             unit.nequal(1, true, "1 neq true");
