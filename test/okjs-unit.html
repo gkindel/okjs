@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../ok.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <h3>okJs Self-Test Harness</h3>
+
+    <script type="text/javascript">
+
+        var unit = okjs({
+            exceptions: 0, // enable for debugging
+            verbose: true,
+            wait_ms: 15000
+        });
+
+        unit.test("basics",  function () {
+            unit.assert("true-ish", "basic boolean true");
+
+            unit.ok("ok(true)", true);
+            unit.ok("ok(1)", 1);
+            unit.ok("ok('foo')", "foo");
+            unit.ok("ok([1,2,3])", [1,2,3]);
+
+            unit.ok("ok(0,0)", true, true);
+            unit.ok("ok(0,0)", 0, 0);
+            unit.ok("ok([],[])", [], []);
+            unit.ok("ok(null,null)", null, null);
+
+            unit.ok("ok(true)", true);
+            unit.ok("ok(1) ", 1);
+            unit.ok("ok('foo') ", 'foo');
+            unit.ok("ok(1, 1) ", 1, 1);
+
+            unit.no("falsey negative assert 0", 0);
+            unit.no("falsey negative assert null", null);
+            unit.no("strictly forbid null value ok", 0, null);
+            unit.no("strictly forbid 1 value ok", null, 1);
+
+            unit.equal(true, true, "true eq true");
+            unit.equal('', '', "empty string identity");
+            unit.equal(null, null, "null eq null");
+
+            unit.nequal(true, false, "true neq false");
+            unit.nequal(1, true, "1 neq true");
+            unit.nequal('', false, "empty string ne false");
+            unit.nequal(null, false, "null ne false");
+        });
+
+        unit.test("basics (negative) ", function () {
+
+            unit.ok("ok(null) fails", null);
+            unit.ok("ok(0) fails", 0);
+            unit.ok("ok([]) fails", []);
+            unit.ok("ok(false) fails", false);
+
+            unit.ok("ok(true,1) fails", true, 1);
+            unit.ok("ok('foo',1) fails", 'foo', 1);
+            unit.ok("ok([1,2,3]',[1]) fails", [1,2,3],[1]);
+
+            unit.no("no(true) fails", true);
+            unit.no("no(1) fails", 1);
+            unit.no("no('foo') fails", 'foo');
+            unit.no("no(1, 1) fails", 1, 1);
+            unit.no("strictly forbid 1 value fail", 1, 1);
+
+        }, true);
+
+        unit.test("timeouts & intervals",  function () {
+            setTimeout( unit.callback("timeout callback"),  500);
+            setTimeout( unit.callback("timeout callback w/ function", function () {
+                unit.equal(true,true, "in callback function ok")
+            }),  500);
+        });
+
+        unit.test("callbacks",  function () {
+            // basic
+            var callback = unit.callback("basic callback");
+            callback();
+
+            var callback2 = unit.callback("callback w/ args, timeout", function (one, two) {
+                unit.equal(one, "arg1", "first arg matches");
+                unit.equal(two, "arg2", "second arg matches");
+            });
+
+            callback2("arg1", "arg2");
+
+            var obj = {
+                id : "foo",
+                method : function (one, two) {
+                    unit.equal(this.id, "foo", "scope and id matches");
+                }
+            };
+            var callback3 = unit.callback("advanced callback w/ scope", obj.method, obj);
+            callback3("param1", "param2");
+        });
+
+
+        unit.test("callbacks (negative)",  function () {
+            unit.callback("callback never fired");
+            setTimeout( unit.callback("callback fired too late", 1000), 1500);
+            setTimeout( unit.callback("callback throws exception", 1000, function() {
+                throw "exception in timeout callback";
+            }), 500);
+        }, true);
+
+
+        unit.test("events",  function () {
+            unit.event("click", document, "document was clicked", function (e) {
+                unit.equal(e.type, "click", "was a mouse click event");
+                unit.equal(e.currentTarget, document, "currentTarget is the document");
+            }, 10000);
+
+            unit.log("simulating document click... ");
+            var evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            document.dispatchEvent(evt);
+        });
+
+        unit.test("jquery ajax",  function () {
+            $.ajax({
+                url: 'test.json',
+                dataType : "json",
+                success: unit.callback("jquery ajax success", function (data){
+                    unit.equal(data.success, true, "json data success");
+                })
+            });
+        });
+
+        window.onload = function () {
+            unit.start()
+        };
+
+    </script>
+</head>
+<body>
+</body>
+</html>
