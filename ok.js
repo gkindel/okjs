@@ -177,6 +177,13 @@
             });
         },
 
+        skip : function ( message) {
+            this.skipped++;
+            this.logger.onSkip({
+                message: message
+            });
+        },
+
         report : function ( message, error) {
 
             if( error && ! this._expectErrors ) {
@@ -215,6 +222,7 @@
             this._complete = [];
             this._queue = [];
             this._blocks = 0;
+            this.skipped = 0;
             this.failed = 0;
             this.passed = 0;
             this._running = false;
@@ -371,8 +379,16 @@
         },
 
         _summary : function () {
-            this.output.appendChild(div(
-                this.unit.failed ? 'summary error' : 'summary success',
+
+            var type = "summary";
+            if( this.unit.failed )
+                type += " error";
+            else if( this.unit.skipped )
+                type += " skip";
+            else
+                type += " success";
+
+            this.output.appendChild(div( type,
                 this.unit.passed + " test" + (this.unit.passed == 1 ? '' : 's') + " completed. "
                     +  (this.unit.skipped ? this.unit.skipped + " groups skipped. " : '')
                     + this.unit.failed + " error" +(this.unit.failed == 1 ? '' : 's')+ ". "
@@ -390,19 +406,22 @@
         },
 
         onFail : function (result) {
-            this._log("fail", result.message);
+            this._log("fail", result.message + ". " + result.error);
         },
 
         onInfo : function ( info ) {
             this._log("info", link( info.url, info.message) );
         },
 
+        onSkip : function ( info ) {
+            this._log("skip",  info.message);
+        },
+
         onRemote : function (unit) {
-//            this.output.appendChild(div(
             this._log(
                 unit.failed ? 'fail' : 'ok',
                 unit.passed + " test" + (unit.passed == 1 ? '' : 's') + " completed. "
-                    +  (unit.skipped ? unit.skipped + " groups skipped. " : '')
+                    +  (unit.skipped ? unit.skipped + " skipped. " : '')
                     + unit.failed + " error" +(unit.failed == 1 ? '' : 's')+ ". "
                     + this._timestamp()
             );
@@ -425,12 +444,13 @@
             ".success, .ok{ color: gray; }",
             ".test, .group, .summary { font-weight: bold; font-size: 1.1em; }",
             ".info { font-weight: bolder; color: gray; }",
-            ".prompt { font-weight: bolder; color: blue; }",
+            ".skip { color: purple; }",
+            ".prompt { font-weight: bolder; color: green; }",
             ".summary { margin-top: 10px; } ",
             ".summary.success { color: green; }",
             ".item { margin-left: 15px; font-family: monospace;}",
             "#okframe { border: 5px solid gray; border-radius: 5px; position: absolute; top: 10px; bottom: 10px; right: 15px; width: 50%; height: 95%; }"
-            ];
+        ];
         var ss = document.createElement("style");
         ss.text = ss.innerHTML = css.join("\n");
         var head = document.getElementsByTagName('head')[0];
@@ -480,7 +500,7 @@
         if( href ) {
             el = document.createElement('a');
             el.setAttribute('href', href);
-            el.setAttribute('target', target || 'okframe');
+            el.setAttribute('target', target || '_blank');
             el.appendChild( document.createTextNode(message) );
         }
         else
