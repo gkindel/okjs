@@ -54,7 +54,7 @@
 
         // public
 
-        ok : function (message, result, expected) {
+        assert : function (message, result, expected) {
             var error = "";
             var hasExpected = arguments.length == 3;
 
@@ -69,7 +69,7 @@
             this.report(message, error);
         },
 
-        no : function (message, result, forbid) {
+        forbid : function (message, result, forbid) {
             var error = "";
             var hasForbid = arguments.length == 3;
 
@@ -136,7 +136,7 @@
             })
         },
 
-        listen : function (message, object, type, callback, scope, timeout) {
+        event : function (message, object, type, callback, scope, timeout) {
             if( callback && ! (callback instanceof Function) )
                 throw "okjs.listen() invalid function: " + callback;
 
@@ -267,7 +267,7 @@
             // onto the next test
             var test = this._queue.shift();
             this._expectErrors =  test.expectErrors;
-            this.logger.onGroup( test );
+            this.logger.onTest( test );
 
             this._hold();
 
@@ -319,24 +319,8 @@
             return function (){
                 callback.apply(self, arguments);
             }
-        },
-
-        // backward compatibility
-        assert : function (result, message) {
-            this.ok(message, result);
-        },
-
-        equal : function (expected, result, message) {
-            this.ok(message, result, expected);
-        },
-
-        nequal : function (expected, result, message) {
-            this.no(message, result, expected);
-        },
-
-        event : function (type, object, message, callback, timeout) {
-            this.listen(message, object, type, callback, timeout)
         }
+
     };
 
     /**
@@ -396,7 +380,7 @@
             ));
         },
 
-        onGroup : function ( group ) {
+        onTest : function ( group ) {
             this.output.appendChild( div("group", group.message ));
             this._scroll();
         },

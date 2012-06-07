@@ -3,46 +3,51 @@
 <html>
 <head>
     <script type="text/javascript" src="../ok.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 
-    <h3>OKJS Quick Start Example</h3>
+    <h3>okJS : Quick Start Example</h3>
 
     <script type="text/javascript">
 
         var unit = okjs();
 
-        unit.test("basic",  function () {
-            unit.ok("ok(msg, 1) basic boolean true", 1);
-            unit.equal(true, true, "strict comparison true");
-            unit.nequal(true, false, "strict comaparison neq");
-            unit.nequal(1, true, "1 neq true");
+        unit.test("basics:  unit.assert() and unit.forbid()",  function () {
+            var foo = 12345;
+            unit.assert("value is true-ish", foo);
+            unit.assert("strictly compare value", foo, 12345);
+
+            var bar = 0;
+            unit.forbid("value is false-ish", bar);
+            unit.forbid("strictly forbid value", bar, null);
         });
 
-        unit.test("async callback",  function () {
-           setTimeout( unit.callback("timeout callback w/ function", function () {
-                unit.equal(true,true, "in callback function ok")
+        unit.test("asynchronous callbacks: unit.callback()",  function () {
+            setTimeout( unit.callback("test callback is fired"), 500);
+            setTimeout( unit.callback("callback fired, with subtests", function () {
+                unit.assert("in callback, true == true", true,true);
             }),  500);
         });
 
-        unit.test("async event",  function () {
-            unit.event("click", document, "document was clicked", function (e) {
-                unit.equal(e.type, "click", "was a mouse click event");
-                unit.equal(e.currentTarget, document, "currentTarget is the document");
+        unit.test("event testing: unit.event() ",  function () {
+            unit.event("document was clicked", document, "click", function (e) {
+                unit.assert("was a mouse click event", e.type, "click");
+                unit.assert("currentTarget is the document", e.currentTarget, document);
             }, 10000);
-            unit.log("waiting 10s for user to click page... ");
+
+            unit.log("waiting 10s for user to click page...");
         });
 
-        unit.test("exception throwing",  function () {
-            unit.exception("expected exception", function () {
+        unit.test("expected errors",  function () {
+            unit.exception("undefined method called", function () {
+                null.missingFunction();
+            });
+
+            unit.exception("throws an exception", function () {
                 throw "catch me"
             });
         });
 
-        window.onload = function () {
-            unit.start()
-        };
-
-
+        unit.start()
     </script>
 </head>
 <body>
