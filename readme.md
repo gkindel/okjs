@@ -8,8 +8,6 @@ A tiny, asynchronous-friendly JavaScript unit test framework.
 
 ## About
 
----
-
 JavaScript and the web form a heavily asynchronous environment, which can pose particular challenges for JS based unit
 testing.  In particular, Ajax, click handlers, and other observer models require that exceptions be caught in various
 execution blocks and without interfering with object scope.  Additionally, these methods need to execute in a specified
@@ -20,8 +18,6 @@ Pronounced "OK JS", the library directly attends to these hurdles, and is specif
 development.
 
 ## Quick Start
-
----
 
         var unit = okjs();
 
@@ -65,7 +61,7 @@ development.
 
 The okjs library consists of a harness, a test block, and a grouping of assertions.  It will catch exceptions
 in both the passed in test function as well as any asynchronous callbacks or event handlers.  Any asynchronous methods
-which do not fire in the configured time (which defaults to 5sec) will fail be ignored when they do fire.
+which do not fire in the configured time (which defaults to 5sec) will fail and be ignored when they do fire.
 
 For larger projects, okjs has the ability to reference other test pages, displaying summaries and aggregating the total
 test results.
@@ -78,8 +74,6 @@ test results.
         unit.start()
 
 ## Reference
-
----
 
 ### Setup
 
@@ -222,14 +216,10 @@ In addition, the following interfaces are made available by okjs to help with ou
 
 ## License
 
----
-
 okjs is open source, made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
 
 ## More Info
-
----
 
 Currently, the best place to start is to look at the framework's self-test page, in the [/test/](okjs-unit/) folder.
 
@@ -241,6 +231,5 @@ This is an open source project, contributions and bug fixes are welcome.  Forkin
 
 ## Author
 
---- 
 Twitter: [@gkindel](http://twitter.com/#!/gkindel)
 
