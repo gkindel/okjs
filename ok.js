@@ -140,6 +140,12 @@
             if( callback && ! (callback instanceof Function) )
                 throw "okjs.listen() invalid function: " + callback;
 
+            // optional form: function (message, object, type, callback, timeout) {
+            if( typeof scope == "number"){
+                timeout = scope;
+                scope = null;
+            }
+
             var wrapped = this.callback(message, callback, scope, timeout);
             var onEvent = function () {
                 object.removeEventListener(type, onEvent);
@@ -449,7 +455,7 @@
             ".summary { margin-top: 10px; } ",
             ".summary.success { color: green; }",
             ".item { margin-left: 15px; font-family: monospace;}",
-            "#okframe { border: 5px solid gray; border-radius: 5px; position: absolute; top: 10px; bottom: 10px; right: 15px; width: 50%; height: 95%; }"
+            "#okframe { background: white; z-index: 100; border: 5px solid gray; border-radius: 5px; position: absolute; top: 10px; bottom: 10px; right: 15px; width: 50%; height: 95%; }"
         ];
         var ss = document.createElement("style");
         ss.text = ss.innerHTML = css.join("\n");
