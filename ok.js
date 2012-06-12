@@ -93,7 +93,7 @@
 
             // if subtest, schedule immediately
             if( this._running )
-                this._queue.unshift(test);
+                this._subtests.push(test);
 
             // else tag on end
             else
@@ -128,9 +128,9 @@
             // wrap callback in exception-catching environment
             return this._bind( function () {
                 clearTimeout(timer);
-                if(! active ) {
+                if(! active )
                     return;
-                }
+                active = false;
                 this._eval(message, callback, scope, arguments);
                 this._release();
             })
@@ -225,8 +225,8 @@
         // "private"
 
         _init : function () {
-            this._complete = [];
             this._queue = [];
+            this._subtests = [];
             this._blocks = 0;
             this.skipped = 0;
             this.failed = 0;
@@ -279,6 +279,7 @@
             }
 
             // onto the next test
+            this._subtests = [];
             var test = this._queue.shift();
             this._expectErrors =  test.expectErrors;
             this.logger.onTest( test );
@@ -292,6 +293,9 @@
                 this._url(test.url);
 
             this._release();
+
+            // queue up any subtests generated during run
+            this._queue = this._subtests.concat( this._queue);
         },
 
         _url : function (url){
