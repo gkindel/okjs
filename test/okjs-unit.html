@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../ok.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <h3>okJs Self-Test Harness</h3>
+
+    <script type="text/javascript">
+
+        var unit = okjs({
+            exceptions: 0, // enable for debugging
+            verbose: true,
+            wait_ms: 15000
+        });
+
+        unit.test("basics",  function () {
+            unit.assert("true-ish", "basic boolean true");
+
+            unit.assert("ok(true)", true);
+            unit.assert("ok(1)", 1);
+            unit.assert("ok('foo')", "foo");
+            unit.assert("ok([1,2,3])", [1,2,3]);
+
+            unit.assert("ok(0,0)", true, true);
+            unit.assert("ok(0,0)", 0, 0);
+            unit.assert("ok([],[])", [], []);
+            unit.assert("ok(null,null)", null, null);
+
+            unit.assert("ok(true)", true);
+            unit.assert("ok(1) ", 1);
+            unit.assert("ok('foo') ", 'foo');
+            unit.assert("ok(1, 1) ", 1, 1);
+
+            unit.forbid("false-ish negative assert 0", 0);
+            unit.forbid("false-ish negative assert null", null);
+            unit.forbid("strictly forbid null value ok", 0, null);
+            unit.forbid("strictly forbid 1 value ok", null, 1);
+            return;
+
+        });
+
+        unit.test("basics (negative) ", function () {
+            unit.assert("ok(null) fails", null);
+            unit.assert("ok(0) fails", 0);
+            unit.assert("ok([]) fails", []);
+            unit.assert("ok(false) fails", false);
+
+            unit.assert("ok(true,1) fails", true, 1);
+            unit.assert("ok('foo',1) fails", 'foo', 1);
+            unit.assert("ok([1,2,3]',[1]) fails", [1,2,3],[1]);
+
+            unit.forbid("no(true) fails", true);
+            unit.forbid("no(1) fails", 1);
+            unit.forbid("no('foo') fails", 'foo');
+            unit.forbid("no(1, 1) fails", 1, 1);
+            unit.forbid("strictly forbid 1 value fail", 1, 1);
+        }, true);
+
+
+        unit.test("callbacks",  function () {
+            // basic
+            var callback = unit.callback("unit.callback()");
+            callback();
+
+            // preserves args
+            var callback2 = unit.callback("unit.callback(a,b)", function (a, b) {
+                unit.assert("first arg matches", a, 123);
+                unit.assert("second arg matches", b, 456);
+            });
+            callback2(123, 456);
+
+            // preserves scope
+            var obj = {};
+            obj.method = function (one, two) {
+                unit.assert("scope matches", this, obj);
+            };
+            var callback3 = unit.callback("advanced callback w/ scope", obj.method, obj);
+            callback3("param1", "param2");
+
+            // async firing
+            setTimeout( unit.callback("timeout callback"),  500);
+
+            // async and response
+            setTimeout( unit.callback("timeout callback w/ function", function () {
+                unit.assert("in callback function ok", true,true)
+            }),  500);
+        });
+
+
+        unit.test("callbacks (negative)",  function () {
+
+            unit.callback("callback never fired");
+
+            setTimeout( unit.callback("callback fired too late"), 1500);
+
+            setTimeout( unit.callback("callback throws exception", function() {
+                throw "exception in timeout callback";
+            }), 500);
+
+        }, true);
+
+
+        unit.test("events",  function () {
+
+            unit.event("document was clicked", document, "click", function (e) {
+                unit.assert("was a mouse click event", e.type, "click");
+                unit.assert("currentTarget is the document", e.currentTarget, document);
+            }, 10000);
+
+            unit.log("simulating document click... ");
+
+            var evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            document.dispatchEvent(evt);
+        });
+
+        unit.test("jquery ajax",  function () {
+            $.ajax({
+                url: 'test.json',
+                dataType : "json",
+                success: unit.callback("jquery ajax success", function (data){
+                    unit.assert("json data success", data.success, true);
+                })
+            });
+        });
+
+        unit.start()
+
+    </script>
+</head>
+<body>
+</body>
+</html>
