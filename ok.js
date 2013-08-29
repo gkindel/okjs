@@ -17,7 +17,7 @@
 
  Author: Greg Kindel
  Created: "Unit.js" Spring 2011
-
+ Updated; added JSON.stringify for object/array comparison, Aug 2013
  */
 
 (function () {
@@ -541,22 +541,21 @@
             expected = expected.call(null, got);
         }
 
-        if( expected instanceof Array ){
-            if( expected.length != got.length)
-                return false;
-
-            for(var i=0; i<expected.length; i++){
-                if( got[i] !== expected[i] )
-                    return false;
-            }
-            return true;
-        }
-        else if( expected instanceof Object ) {
+        if( expected instanceof Array || expected instanceof Object ) {
             if( expected.equals instanceof Function ){
                 return expected.equals(got);
             }
             else {
-                return(expected === got);
+                // poor man's deep compare: use JSON to compare objects
+                var e, g;
+                try {
+                    e = JSON.stringify(expected);
+                    g = JSON.stringify(got);
+                    return e === g;
+                }
+                catch(e) {
+                    return (expected === got);
+                }
             }
         }
         else {
