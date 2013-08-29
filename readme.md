@@ -17,6 +17,9 @@ a larger suite.
 Pronounced "OK JS", the library directly attends to these hurdles, and is specifically intended for use in test driven
 development.
 
+[Live Example](http://gkindel.com/okjs/test/okjs-unit.html)
+
+
 ## Quick Start
 
         var unit = okjs();
@@ -59,6 +62,10 @@ development.
 
         unit.start()
 
+
+[Quickstart Output](http://gkindel.com/okjs/test/quickstart.html)
+
+
 The okjs library consists of a harness, a test block, and a grouping of assertions.  It will catch exceptions
 in both the passed in test function as well as any asynchronous callbacks or event handlers.  Any asynchronous methods
 which do not fire in the configured time (which defaults to 5sec) will fail and be ignored when they do fire.
@@ -90,7 +97,7 @@ test results.
 
 * `.test(msg, fn)`
 
-    Defines a group of test assertions. Groups are guarantedd to be executed sequentially. Asynchronous callbacks and events
+    Defines a group of test assertions. Groups are guaranteed to be executed sequentially. Asynchronous callbacks and events
     will block the test until resolved either by firing or by timing out. All other okjs statments must be done within
     a test group. Tests are queued until unit.start() is called.
 
@@ -112,7 +119,9 @@ test results.
 
 * .`assert(msg, result, expected)`
 
-    Strictly test for a value.  Passes if `result` === `expected`
+    Strictly test for a value.  Passes if `result` === `expected`. For Objects and Arrays, a deep comparison is done via
+    comparing the output of JSON.stringify() on the two values.  If objects contain a .equals() property, then it is
+    called instead with an expeced boolean response.
 
     * `msg` : A string description of the test.
     * `result` An object or property to test
