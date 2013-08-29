@@ -17,7 +17,7 @@ a larger suite.
 Pronounced "OK JS", the library directly attends to these hurdles, and is specifically intended for use in test driven
 development.
 
-[Live Example](http://gkindel.com/okjs/test/okjs-unit.html)
+[Live Example](http://gkindel.github.io/okjs/test/okjs-unit.html)
 
 
 ## Quick Start
@@ -63,7 +63,7 @@ development.
         unit.start()
 
 
-[Quickstart Output](http://gkindel.com/okjs/test/quickstart.html)
+[Quickstart Output](http://gkindel.github.io/okjs/test/quickstart.html)
 
 
 The okjs library consists of a harness, a test block, and a grouping of assertions.  It will catch exceptions
